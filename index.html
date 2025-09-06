@@ -266,23 +266,28 @@
         .story-choice {
             background: #FFEB3B;
             color: #333;
-            padding: 5px 10px;
-            border-radius: 15px;
+            padding: 8px 15px;
+            border-radius: 20px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
             display: inline-block;
-            margin: 2px;
+            margin: 3px;
+            border: 2px solid #FFC107;
+            font-size: 1em;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
 
         .story-choice:hover {
             background: #FFC107;
             transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .story-choice.selected {
             background: #4CAF50;
             color: white;
+            border-color: #45A049;
         }
 
         .hidden {
@@ -679,17 +684,33 @@
 
         // Face o alegere în povestea interactivă
         function makeStoryChoice(choiceKey, choice) {
+            // Previne apeluri multiple
+            if (storyChoices[choiceKey]) {
+                return;
+            }
+            
             storyChoices[choiceKey] = choice;
             answeredQuestions++;
             score++; // Orice alegere este corectă în povestea interactivă
             updateScore();
             updateProgress();
             
-            // Re-randează povestea cu alegerea făcută
-            renderCurrentExercise();
+            // Marchează alegerea ca selectată
+            const allChoices = document.querySelectorAll('.story-choice');
+            allChoices.forEach(choiceEl => {
+                if (choiceEl.textContent === choice) {
+                    choiceEl.classList.add('selected');
+                    choiceEl.style.pointerEvents = 'none';
+                } else if (choiceEl.onclick && choiceEl.onclick.toString().includes(choiceKey)) {
+                    choiceEl.style.opacity = '0.5';
+                    choiceEl.style.pointerEvents = 'none';
+                }
+            });
             
-            // Activează butonul Next după 1 secundă
+            // Re-randează povestea cu alegerea făcută
             setTimeout(() => {
+                renderCurrentExercise();
+                // Activează butonul Next
                 document.getElementById('nextBtn').disabled = false;
             }, 1000);
         }
@@ -792,4 +813,5 @@
     </script>
 </body>
 </html>
+
 
