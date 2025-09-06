@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Povești Creative - Aventura Scrierii</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF6B9D">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #FF6B9D, #C44569);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '✨';
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-size: 2em;
+            animation: sparkle 2s infinite;
+        }
+
+        .header::after {
+            content: '🌟';
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 2em;
+            animation: sparkle 2s infinite 1s;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.2) rotate(180deg); }
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .content {
+            padding: 40px;
+            min-height: 500px;
+        }
+
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            background: #E9ECEF;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #FF6B9D, #4ECDC4);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 5px;
+        }
+
+        .question-container {
+            background: linear-gradient(135deg, #FFE5F1, #E8F4FD);
+            border: 3px solid #FF6B9D;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .question-title {
+            font-size: 2em;
+            color: #C44569;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .story-text {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 10px;
+        }
+
+        .question-text {
+            background: #F8F9FA;
+            border-left: 5px solid #4ECDC4;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .answers {
+            display: grid;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .answer-btn {
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-family: inherit;
+        }
+
+        .answer-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #45B7B8, #3D8B85);
+        }
+
+        .answer-btn.correct {
+            background: linear-gradient(135deg, #00D2FF, #3A7BD5);
+            animation: pulse 0.6s ease-in-out;
+        }
+
+        .answer-btn.incorrect {
+            background: linear-gradient(135deg, #FF416C, #FF4B2B);
+            animation: shake 0.6s ease-in-out;
+        }
+
+        .answer-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding: 20px 0;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-family: inherit;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 1.5em;
+            color: #C44569;
+            font-weight: bold;
+        }
+
+        .completion-screen {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .completion-screen h2 {
+            color: #C44569;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .completion-emoji {
+            font-size: 4em;
+            margin: 20px 0;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #FF6B9D, #C44569);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 25px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-family: inherit;
+            margin-top: 20px;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .story-choice {
+            background: #FFEB3B;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin: 2px;
+        }
+
+        .story-choice:hover {
+            background: #FFC107;
+            transform: scale(1.05);
+        }
+
+        .story-choice.selected {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .question-title {
+                font-size: 1.5em;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>🌈 Povești Creative 📚</h1>
+            <p>Aventura ta în lumea scrierii creative!</p>
+        </div>
+        
+        <div class="content">
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            
+            <div id="gameContent">
+                <!-- Conținutul se va genera dinamic -->
+            </div>
+            
+            <div class="navigation">
+                <button class="nav-btn" id="prevBtn" onclick="previousQuestion()" disabled>⬅️ Înapoi</button>
+                <div class="score" id="scoreDisplay">Scor: 0/0</div>
+                <button class="nav-btn" id="nextBtn" onclick="nextQuestion()" disabled>Următorul ➡️</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Date pentru toate exercițiile
+        const gameData = [
+            {
+                type: 'story-questions',
+                title: '🌟 Povestea Magică',
+                story: 'Într-o noapte cu stele mov, o girafă cu ochelari zburători a traversat deasupra unui oraș de înghețată pentru a livra o scrisoare parfumată unui pinguin poet care scria versuri pe un nor roz.',
+                questions: [
+                    {
+                        text: '1. Povestea are loc într-o noapte obișnuită.',
+                        answers: ['A) Fals', 'B) Adevărat'],
+                        correct: 0
+                    },
+                    {
+                        text: '2. Girafa purta ochelari zburători.',
+                        answers: ['A) Adevărat', 'B) Fals'],
+                        correct: 0
+                    },
+                    {
+                        text: '3. Orașul peste care zboară girafa era din înghețată.',
+                        answers: ['A) Adevărat', 'B) Fals'],
+                        correct: 0
+                    },
+                    {
+                        text: '4. Girafa trimitea o scrisoare unui crocodil astronaut.',
+                        answers: ['A) Adevărat', 'B) Fals'],
+                        correct: 1
+                    },
+                    {
+                        text: '5. Pinguinul scria poezii pe un nor roz.',
+                        answers: ['A) Adevărat', 'B) Fals'],
+                        correct: 0
+                    }
+                ]
+            },
+            {
+                type: 'memory-questions',
+                title: '🎲 Ce povești ne-au rămas în minte?',
+                questions: [
+                    {
+                        text: '1. Ce poveste ți-a rămas cel mai mult în minte?',
+                        answers: ['A) Cenușăreasa', 'B) Harap Alb', 'C) Povestea cu care m-am simțit cel mai mult legat'],
+                        correct: 2
+                    },
+                    {
+                        text: '2. De ce îți amintești acea poveste?',
+                        answers: ['A) Pentru că am fost forțat să o citesc', 'B) Pentru că personajul semăna cu mine', 'C) Pentru că m-a făcut să simt ceva puternic: bucurie, tristețe, curaj'],
+                        correct: 2
+                    },
+                    {
+                        text: '3. Care personaj îți vine mereu în minte?',
+                        answers: ['A) Un dragon furios', 'B) O prințesă care dansează', 'C) Un personaj care a făcut ceva neașteptat și curajos'],
+                        correct: 2
+                    },
+                    {
+                        text: '4. Ce parte dintr-o poveste te face să n-o uiți?',
+                        answers: ['A) Când mâncau la final tort', 'B) Când apărea un animal amuzant', 'C) Când personajul învăța o lecție importantă'],
+                        correct: 2
+                    },
+                    {
+                        text: '5. Cum îți amintești poveștile mai ușor?',
+                        answers: ['A) Dacă au imagini colorate', 'B) Dacă le citesc repede', 'C) Dacă mi le imaginez ca pe un film în minte'],
+                        correct: 2
+                    }
+                ]
+            },
+            {
+                type: 'creative-story',
+                title: '🎲 Ce-ar fi dacă...? Povestea începe așa!',
+                description: 'Alege o propoziție ciudată și continuă povestea cu 2-3 propoziții!',
+                storyStarters: [
+                    '🦙 O lamă roz a fugit cu ghiozdanul meu spre Marte.',
+                    '🐸 Un broscoi profesor își căuta ochelarii în budinca de ciocolată.',
+                    '🍕 O felie de pizza a început să vorbească și mi-a cerut un nume.',
+                    '🧚‍♂️ Un spiriduș leneș a dormit într-un pantof timp de 100 de ani.',
+                    '🐘 Un elefant și-a făcut cont de TikTok și a devenit celebru.',
+                    '🧀 Un șoricel inventator a creat o mașină de zburat din brânză topită.',
+                    '🐲 Un dragon cu răceală a stins un oraș din greșeală... suflând abur.'
+                ]
+            },
+            {
+                type: 'interactive-story',
+                title: '📖 Misterul din Școala Părăsită',
+                story: 'Într-o zi de toamnă, Matei și prietena lui, Ana, s-au aventurat lângă o școală veche și părăsită din orașul lor.',
+                parts: [
+                    {
+                        text: 'Se spunea că acolo, în fiecare seară, se aud {choice1} venind din clasa a patra.',
+                        choices: ['râsete ciudate', 'pași de copil', 'uși care se trântesc']
+                    },
+                    {
+                        text: 'Copiii erau curioși și au decis să se apropie. Când au intrat, au simțit un vânt rece și au văzut o {choice2} plutind prin aer!',
+                        choices: ['carte veche', 'minge de hârtie', 'radieră']
+                    },
+                    {
+                        text: '— „Poate e doar curentul... sau poate e {choice3}," a spus Ana.',
+                        choices: ['o fantomă jucăușă', 'un profesor invizibil', 'un motan nevăzut']
+                    },
+                    {
+                        text: 'Au urcat la etaj și au intrat în clasă. Pe tablă era scris cu cretă: {choice4}',
+                        choices: ['"Bine ați venit înapoi!"', '"Lăsați tema aici!"', '"Nu deranjați ora!"']
+                    },
+                    {
+                        text: 'Deodată, un dulap a început să {choice5}, iar din el a sărit ceva...',
+                        choices: ['tremure', 'cânte', 'scâncească']
+                    },
+                    {
+                        text: 'Era un {choice6} de pluș cu un bilețel legat de gât.',
+                        choices: ['ursuleț', 'pui de dragon', 'iepuraș']
+                    },
+                    {
+                        text: 'Pe bilețel scria: {choice7}',
+                        choices: ['"Mulțumesc că ai venit să mă iei!"', '"Am fost uitat aici din 1995..."', '"Joacă-te cu mine, te rog!"']
+                    },
+                    {
+                        text: 'Matei și Ana au zâmbit. Nu era o fantomă rea. Era doar un {choice8} care voia companie. Au promis că vor reveni în fiecare vineri pentru joacă. De atunci, școala veche n-a mai fost la fel...',
+                        choices: ['spiriduș uitat', 'ursuleț magic', 'vis de copil']
+                    }
+                ]
+            }
+        ];
+
+        // Variabile de stare
+        let currentExercise = 0;
+        let currentQuestion = 0;
+        let score = 0;
+        let totalQuestions = 0;
+        let answeredQuestions = 0;
+        let storyChoices = {};
+
+        // Calculează numărul total de întrebări
+        function calculateTotalQuestions() {
+            totalQuestions = 0;
+            gameData.forEach(exercise => {
+                if (exercise.questions) {
+                    totalQuestions += exercise.questions.length;
+                } else if (exercise.parts) {
+                    totalQuestions += exercise.parts.length;
+                } else if (exercise.storyStarters) {
+                    totalQuestions += exercise.storyStarters.length;
+                }
+            });
+        }
+
+        // Actualizează bara de progres
+        function updateProgress() {
+            const progress = (answeredQuestions / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        // Actualizează scorul
+        function updateScore() {
+            document.getElementById('scoreDisplay').textContent = `Scor: ${score}/${totalQuestions}`;
+        }
+
+        // Randează exercițiul curent
+        function renderCurrentExercise() {
+            const exercise = gameData[currentExercise];
+            const content = document.getElementById('gameContent');
+            
+            if (exercise.type === 'story-questions') {
+                renderStoryQuestions(exercise);
+            } else if (exercise.type === 'memory-questions') {
+                renderMemoryQuestions(exercise);
+            } else if (exercise.type === 'creative-story') {
+                renderCreativeStory(exercise);
+            } else if (exercise.type === 'interactive-story') {
+                renderInteractiveStory(exercise);
+            }
+            
+            updateNavigationButtons();
+        }
+
+        // Randează întrebările cu poveste
+        function renderStoryQuestions(exercise) {
+            const content = document.getElementById('gameContent');
+            const question = exercise.questions[currentQuestion];
+            
+            content.innerHTML = `
+                <div class="question-container">
+                    <div class="question-title">${exercise.title}</div>
+                    ${currentQuestion === 0 ? `
+                        <div class="story-text">
+                            <strong>Citește cu atenție povestea:</strong><br><br>
+                            "${exercise.story}"
+                        </div>
+                    ` : ''}
+                    <div class="question-text">
+                        <strong>${question.text}</strong>
+                    </div>
+                    <div class="answers">
+                        ${question.answers.map((answer, index) => 
+                            `<button class="answer-btn" onclick="selectAnswer(${index})">${answer}</button>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Randează întrebările despre amintiri
+        function renderMemoryQuestions(exercise) {
+            const content = document.getElementById('gameContent');
+            const question = exercise.questions[currentQuestion];
+            
+            content.innerHTML = `
+                <div class="question-container">
+                    <div class="question-title">${exercise.title}</div>
+                    <div class="question-text">
+                        <strong>${question.text}</strong>
+                    </div>
+                    <div class="answers">
+                        ${question.answers.map((answer, index) => 
+                            `<button class="answer-btn" onclick="selectAnswer(${index})">${answer}</button>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Randează exercițiul de poveste creativă
+        function renderCreativeStory(exercise) {
+            const content = document.getElementById('gameContent');
+            const storyStarter = exercise.storyStarters[currentQuestion];
+            
+            content.innerHTML = `
+                <div class="question-container">
+                    <div class="question-title">${exercise.title}</div>
+                    <div class="story-text">
+                        <strong>${exercise.description}</strong><br><br>
+                        <div style="background: #FFE5F1; padding: 20px; border-radius: 15px; border-left: 5px solid #FF6B9D; font-size: 1.2em;">
+                            ${storyStarter}
+                        </div>
+                    </div>
+                    <div class="question-text">
+                        <strong>Continuă povestea cu 2-3 propoziții creative!</strong><br>
+                        <small style="color: #666;">Folosește-ți imaginația și fii cât mai creativ!</small>
+                    </div>
+                    <div style="margin: 20px 0;">
+                        <textarea id="storyInput" placeholder="Scrie continuarea poveștii aici..." 
+                                style="width: 100%; height: 120px; padding: 15px; border: 2px solid #FF6B9D; 
+                                       border-radius: 15px; font-family: inherit; font-size: 1em; resize: vertical;"></textarea>
+                    </div>
+                    <div class="answers">
+                        <button class="answer-btn" onclick="submitCreativeStory()" id="submitStoryBtn">
+                            ✨ Trimite Povestea ✨
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Randează povestea interactivă
+        function renderInteractiveStory(exercise) {
+            const content = document.getElementById('gameContent');
+            
+            let storyText = exercise.story;
+            
+            exercise.parts.forEach((part, partIndex) => {
+                if (partIndex <= currentQuestion) {
+                    let partText = part.text;
+                    const choiceKey = `choice${partIndex + 1}`;
+                    
+                    if (storyChoices[choiceKey]) {
+                        partText = partText.replace(`{${choiceKey}}`, `<strong>${storyChoices[choiceKey]}</strong>`);
+                    } else {
+                        const choiceButtons = part.choices.map(choice => 
+                            `<span class="story-choice" onclick="makeStoryChoice('${choiceKey}', '${choice}')">${choice}</span>`
+                        ).join(' / ');
+                        partText = partText.replace(`{${choiceKey}}`, choiceButtons);
+                    }
+                    
+                    storyText += ' ' + partText;
+                }
+            });
+            
+            content.innerHTML = `
+                <div class="question-container">
+                    <div class="question-title">${exercise.title}</div>
+                    <div class="story-text">${storyText}</div>
+                </div>
+            `;
+        }
+
+        // Trimite povestea creativă
+        function submitCreativeStory() {
+            const storyInput = document.getElementById('storyInput');
+            const storyText = storyInput.value.trim();
+            
+            if (storyText.length < 10) {
+                alert('Te rog să scrii cel puțin câteva cuvinte pentru a continua povestea! 😊');
+                return;
+            }
+            
+            // Dezactivează butonul și textarea
+            document.getElementById('submitStoryBtn').disabled = true;
+            storyInput.disabled = true;
+            
+            // Marchează ca fiind completat
+            document.getElementById('submitStoryBtn').classList.add('correct');
+            document.getElementById('submitStoryBtn').textContent = '🎉 Poveste Trimisă! 🎉';
+            
+            answeredQuestions++;
+            score++; // Orice poveste creativă este considerată corectă
+            updateScore();
+            updateProgress();
+            
+            // Activează butonul Next după 2 secunde
+            setTimeout(() => {
+                document.getElementById('nextBtn').disabled = false;
+            }, 2000);
+        }
+
+        // Selectează un răspuns
+        function selectAnswer(answerIndex) {
+            const exercise = gameData[currentExercise];
+            const question = exercise.questions[currentQuestion];
+            const buttons = document.querySelectorAll('.answer-btn');
+            
+            // Dezactivează toate butoanele
+            buttons.forEach(btn => btn.disabled = true);
+            
+            // Marchează răspunsul selectat
+            const selectedButton = buttons[answerIndex];
+            const isCorrect = answerIndex === question.correct;
+            
+            if (isCorrect) {
+                selectedButton.classList.add('correct');
+                score++;
+            } else {
+                selectedButton.classList.add('incorrect');
+                buttons[question.correct].classList.add('correct');
+            }
+            
+            answeredQuestions++;
+            updateScore();
+            updateProgress();
+            
+            // Activează butonul Next după 1.5 secunde
+            setTimeout(() => {
+                document.getElementById('nextBtn').disabled = false;
+            }, 1500);
+        }
+
+        // Face o alegere în povestea interactivă
+        function makeStoryChoice(choiceKey, choice) {
+            storyChoices[choiceKey] = choice;
+            answeredQuestions++;
+            score++; // Orice alegere este corectă în povestea interactivă
+            updateScore();
+            updateProgress();
+            
+            // Re-randează povestea cu alegerea făcută
+            renderCurrentExercise();
+            
+            // Activează butonul Next după 1 secundă
+            setTimeout(() => {
+                document.getElementById('nextBtn').disabled = false;
+            }, 1000);
+        }
+
+        // Actualizează butoanele de navigare
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = (currentExercise === 0 && currentQuestion === 0);
+            nextBtn.disabled = true; // Se activează doar după răspuns
+        }
+
+        // Întrebarea următoare
+        function nextQuestion() {
+            const exercise = gameData[currentExercise];
+            
+            if (exercise.questions && currentQuestion < exercise.questions.length - 1) {
+                currentQuestion++;
+            } else if (exercise.parts && currentQuestion < exercise.parts.length - 1) {
+                currentQuestion++;
+            } else if (exercise.storyStarters && currentQuestion < exercise.storyStarters.length - 1) {
+                currentQuestion++;
+            } else if (currentExercise < gameData.length - 1) {
+                currentExercise++;
+                currentQuestion = 0;
+            } else {
+                showCompletion();
+                return;
+            }
+            
+            renderCurrentExercise();
+        }
+
+        // Întrebarea anterioară
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+            } else if (currentExercise > 0) {
+                currentExercise--;
+                const prevExercise = gameData[currentExercise];
+                if (prevExercise.questions) {
+                    currentQuestion = prevExercise.questions.length - 1;
+                } else if (prevExercise.parts) {
+                    currentQuestion = prevExercise.parts.length - 1;
+                } else if (prevExercise.storyStarters) {
+                    currentQuestion = prevExercise.storyStarters.length - 1;
+                }
+            }
+            
+            renderCurrentExercise();
+        }
+
+        // Afișează ecranul de finalizare
+        function showCompletion() {
+            const content = document.getElementById('gameContent');
+            content.innerHTML = `
+                <div class="completion-screen">
+                    <h2>🎉 Felicitări! 🎉</h2>
+                    <div class="completion-emoji">🌟</div>
+                    <p>Ai terminat toate exercițiile de scriere creativă!</p>
+                    <div class="score">Scorul tău final: ${score}/${totalQuestions}</div>
+                    <p>Ești un adevărat scriitor creativ! 📝✨</p>
+                    <button class="restart-btn" onclick="restartGame()">🔄 Începe din nou</button>
+                </div>
+            `;
+            
+            document.querySelector('.navigation').style.display = 'none';
+        }
+
+        // Reîncepe jocul
+        function restartGame() {
+            currentExercise = 0;
+            currentQuestion = 0;
+            score = 0;
+            answeredQuestions = 0;
+            storyChoices = {};
+            
+            document.querySelector('.navigation').style.display = 'flex';
+            calculateTotalQuestions();
+            updateScore();
+            updateProgress();
+            renderCurrentExercise();
+        }
+
+        // Înregistrează service worker-ul
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(error => console.log('SW registration failed'));
+            });
+        }
+
+        // Inițializează aplicația
+        calculateTotalQuestions();
+        updateScore();
+        updateProgress();
+        renderCurrentExercise();
+    </script>
+</body>
+</html>
+
