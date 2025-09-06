@@ -1,0 +1,36 @@
+{
+  "name": "Povești Creative - Aventura Scrierii",
+  "short_name": "Povești Creative",
+  "description": "O aplicație interactivă pentru copii care îi ajută să învețe scriere creativă prin exerciții distractive și povești magice",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#FF6B9D",
+  "orientation": "portrait-primary",
+  "scope": "./",
+  "lang": "ro",
+  "categories": ["education", "kids", "games"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ]
+}
+
